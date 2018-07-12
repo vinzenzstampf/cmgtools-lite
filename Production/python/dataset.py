@@ -430,8 +430,11 @@ class PrivateDataset ( BaseDataset ):
         entries = []
         for line in dbsOut:
             line = line.replace('\n','')
+#             if "nevents" in line:
+#                 entries.append(int(line.split(":")[1]))
             if "nevents" in line:
-                entries.append(int(line.split(":")[1]))
+                entries.append( int(re.search('"nevents":(.\d*?),', line).groups()[0]) )
+
         if entries:
             return sum(entries)
         return -1
@@ -454,8 +457,11 @@ class PrivateDataset ( BaseDataset ):
         entries = []
         for line in dbsOut:
             line = line.replace('\n','')
+#             if "nfiles" in line:
+#                 entries.append(int(line.split(":")[1]))
             if "nfiles" in line:
-                entries.append(int(line.split(":")[1]))
+                entries.append( int(re.search('"nfiles":(.\d*?),', line).groups()[0]) )
+            
         if entries:
             return sum(entries)
         return -1
