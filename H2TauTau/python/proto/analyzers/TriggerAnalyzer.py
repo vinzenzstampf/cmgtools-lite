@@ -1,6 +1,6 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
-
+import FWCore.ParameterSet.Config as cms 
 import PhysicsTools.HeppyCore.framework.config as cfg
 
 class TriggerFilterMatch(object):
@@ -37,6 +37,7 @@ class TriggerInfo(object):
 class TriggerAnalyzer(Analyzer):
     '''Access to trigger information, and trigger selection. The required
     trigger names need to be attached to the components.'''
+        
 
     def declareHandles(self):
         super(TriggerAnalyzer, self).declareHandles()
@@ -65,6 +66,10 @@ class TriggerAnalyzer(Analyzer):
                 'selectedPatTrigger',
                 'std::vector<pat::TriggerObjectStandAlone>'
                 )
+        # setting up things for heppy 94X
+#            self.handles['triggerObjects'] = cms.EDProducer("PATTriggerObjectStandAloneUnpacker",
+#                                             patTriggerObjectsStandAlone = cms.InputTag( 'slimmedPatTrigger' ),
+#                                             triggerResults             = cms.InputTag( 'TriggerResults::HLT' ),)
  
         if hasattr(self.cfg_ana, 'triggerPrescalesHandle'):
             myhandle = self.cfg_ana.triggerPrescalesHandle
