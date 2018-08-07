@@ -50,14 +50,11 @@ class JetAnalyzer(Analyzer):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(JetAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
-        self.btagSF = {
-            'medium':BTagSF(0, wp='medium'),
-            'loose':BTagSF(0, wp='loose')
-        }
+        self.btagSF = BTagSF(0, wp='medium')
         self.recalibrateJets = getattr(cfg_ana, 'recalibrateJets', False)
 
-        mcGT = getattr(cfg_ana, 'mcGT', '80X_mcRun2_asymptotic_2016_TrancheIV_v8')
-        dataGT = getattr(cfg_ana, 'dataGT', '80X_dataRun2_2016SeptRepro_v7')
+        mcGT = getattr(cfg_ana, 'mcGT', 'Spring16_25nsV6_MC')
+        dataGT = getattr(cfg_ana, 'dataGT', 'Spring16_25nsV6_DATA')
 
         if self.recalibrateJets:
             doResidual = getattr(cfg_ana, 'applyL2L3Residual', 'Data')
@@ -108,10 +105,8 @@ class JetAnalyzer(Analyzer):
         allJets = []
         event.jets = []
         event.bJets = []
-        event.bJetsLoose = []
         event.cleanJets = []
         event.cleanBJets = []
-        event.cleanBJetsLoose = []
 
         leptons = []
         if hasattr(event, 'selectedLeptons'):
@@ -131,7 +126,7 @@ class JetAnalyzer(Analyzer):
         allJets = [Jet(jet) for jet in miniaodjets]
 
         if self.recalibrateJets:
-            self.jetReCalibrator.correctAll(allJets, event.rho, delta=0., 
+            self.jetReCalibrator.correctAll(allJets, event.rho, delta=0., metShift=[0.,0.],
                                                 addCorr=True, addShifts=True)
 
         for jet in allJets:
@@ -152,8 +147,6 @@ class JetAnalyzer(Analyzer):
                 event.jets.append(jet)
             if self.testBJet(jet):
                 event.bJets.append(jet)
-            if self.testBJet(jet, csv_cut=0.5426, wp='loose'):
-                event.bJetsLoose.append(jet)
 
         self.counters.counter('jets').inc('all events')
 
@@ -161,10 +154,6 @@ class JetAnalyzer(Analyzer):
                                                        masks=leptons,
                                                        deltaRMin=0.5)
         event.cleanBJets, dummy = cleanObjectCollection(event.bJets,
-                                                        masks=leptons,
-                                                        deltaRMin=0.5)
-
-        event.cleanBJetsLoose, dummy = cleanObjectCollection(event.bJetsLoose,
                                                         masks=leptons,
                                                         deltaRMin=0.5)
 
@@ -261,25 +250,23 @@ class JetAnalyzer(Analyzer):
             abs( jet.eta() ) < self.cfg_ana.jetEta and \
             self.testJetID(jet)
 
-    def testBJet(self, jet, csv_cut=0.8484, wp='medium'):
+    def testBJet(self, jet, csv_cut=0.8):
         # medium csv working point
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation74X
         jet.btagMVA = jet.btag('pfCombinedInclusiveSecondaryVertexV2BJetTags')
         # jet.btagFlag = jet.btagMVA > csv_cut
 
         # Use the following once we start applying data-MC scale factors:
-        setattr(jet, 'btagFlag'+wp,
-            self.btagSF[wp].isBTagged(
-                pt=jet.pt(),
-                eta=jet.eta(),
-                csv=jet.btag("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
-                jetflavor=abs(jet.partonFlavour()),
-                is_data=not self.cfg_comp.isMC,
-                csv_cut=csv_cut
-            )
+        jet.btagFlag = self.btagSF.isBTagged(
+            pt=jet.pt(),
+            eta=jet.eta(),
+            csv=jet.btag("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+            jetflavor=abs(jet.partonFlavour()),
+            is_data=not self.cfg_comp.isMC,
+            csv_cut=csv_cut
         )
 
         return self.testJet(jet) and \
             abs(jet.eta()) < 2.4 and \
-            getattr(jet, 'btagFlag'+wp) and \
+            jet.btagFlag and \
             self.testJetID(jet)
