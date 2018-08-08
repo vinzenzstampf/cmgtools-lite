@@ -48,8 +48,8 @@ class TriggerAnalyzer(Analyzer):
                 )
         else:    
             self.handles['triggerObjects'] =  AutoHandle(
-#                'selectedPatTrigger',
-                '', # removed due to error
+#                'slimmedPatTrigger', # for bkg MC
+                'selectedPatTrigger', # for signal MC
                 'std::vector<pat::TriggerObjectStandAlone>'
                 )
  
