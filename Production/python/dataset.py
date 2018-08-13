@@ -517,9 +517,10 @@ def createDataset( user, dataset, pattern, readcache=False,
         elif user == 'LOCAL':
             data = LocalDataset( dataset, basedir, pattern)
             info = False
+        elif dbInstance == 'phys03': ## HNL: quickfix to make caching work
+            data = PrivateDataset(dataset, dbsInstance) 
         else:
-#            data = Dataset( dataset, user, pattern)
-            data = PrivateDataset(dataset, dbsInstance)
+            data = Dataset( dataset, user, pattern)
         writeCache(data, dataset, user, pattern, run_range, json)
     return data
 
