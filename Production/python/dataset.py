@@ -518,7 +518,8 @@ def createDataset( user, dataset, pattern, readcache=False,
             data = LocalDataset( dataset, basedir, pattern)
             info = False
         else:
-            data = Dataset( dataset, user, pattern)
+#            data = Dataset( dataset, user, pattern)
+            data = PrivateDataset(dataset, dbsInstance)
         writeCache(data, dataset, user, pattern, run_range, json)
     return data
 

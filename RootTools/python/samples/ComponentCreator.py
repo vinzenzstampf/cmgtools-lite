@@ -70,8 +70,22 @@ class ComponentCreator(object):
         )
         component.splitFactor = 100
         component.dataset_entries = self.getMyPrimaryDatasetEntries(dataset,user,pattern,dbsInstance,useAAA=useAAA) # same number as -query="events dataset=..."
-
         return component
+
+    def getMyPrimaryDatasetEntries(self, dataset, user, pattern, dbsInstance, useAAA=False):
+        # print 'getting files for', dataset,user,pattern
+#        ds = createMyDataset(user, dataset, pattern, dbsInstance, True)
+        ds = createDataset(user, dataset, pattern, True, None, None, None, False, dbsInstance)
+        return ds.primaryDatasetEntries
+
+    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False):
+        # print 'getting files for', dataset,user,pattern
+#        ds = createMyDataset(user, dataset, pattern, dbsInstance, True )
+        ds = createDataset(user, dataset, pattern, True, None, None, None, False, dbsInstance)
+        files = ds.listOfGoodFiles()
+        mapping = 'root://eoscms.cern.ch//eos/cms%s'
+        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
+        return [ mapping % f for f in files]
 
     def getFilesFromEOS(self,name,dataset,path,pattern=".*root"):
         from CMGTools.Production.dataset import getDatasetFromCache, writeDatasetToCache
@@ -196,19 +210,6 @@ class ComponentCreator(object):
         # print 'getting files for', dataset,user,pattern
         ds = createDataset( user, dataset, pattern, True, run_range=run_range )
         return ds.primaryDatasetEntries
-
-    def getMyPrimaryDatasetEntries(self, dataset, user, pattern, dbsInstance, useAAA=False):
-        # print 'getting files for', dataset,user,pattern
-        ds = createMyDataset(user, dataset, pattern, dbsInstance, True)
-        return ds.primaryDatasetEntries
-
-    def getMyFiles(self, dataset, user, pattern, dbsInstance, useAAA=False):
-        # print 'getting files for', dataset,user,pattern
-        ds = createMyDataset(user, dataset, pattern, dbsInstance, True )
-        files = ds.listOfGoodFiles()
-        mapping = 'root://eoscms.cern.ch//eos/cms%s'
-        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
-        return [ mapping % f for f in files]
 
     def getSkimEfficiency(self,dataset,user):
         from CMGTools.Production.datasetInformation import DatasetInformation
