@@ -57,8 +57,20 @@ class ComponentCreator(object):
 
          return component
 
+    def makeMyPrivateDataComponent(self,name,dataset,user,pattern,json,dbsInstance,useAAA=False):
+        component = cfg.DataComponent(
+ #           dataset=dataset,
+            name = name,
+            files = self.getMyFiles(dataset, user, pattern, dbsInstance, useAAA=useAAA),
+            triggers = [],
+            json = json,
+        )
+        component.splitFactor = 100
+        component.json = json
+        component.dataset_entries = self.getMyPrimaryDatasetEntries(dataset,user,pattern,dbsInstance,useAAA=useAAA) # same number as -query="events dataset=..."
+        return component
+
     def makeMyPrivateMCComponent(self,name,dataset,user,pattern,dbsInstance, xSec=1,useAAA=False):
-#        set_trace()
         component = cfg.MCComponent(
             dataset=dataset,
             name = name,
@@ -82,6 +94,14 @@ class ComponentCreator(object):
         # print 'getting files for', dataset,user,pattern
 #        ds = createMyDataset(user, dataset, pattern, dbsInstance, True )
         ds = createDataset(user, dataset, pattern, True, None, None, None, False, dbsInstance)
+        files = ds.listOfGoodFiles()
+        mapping = 'root://eoscms.cern.ch//eos/cms%s'
+        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
+        return [ mapping % f for f in files]
+
+    def getFiles(self, dataset, user, pattern, useAAA=False, run_range=None, json=None, unsafe = False):
+        # print 'getting files for', dataset,user,pattern
+        ds = createDataset( user, dataset, pattern, readcache=True, run_range=run_range, json=json, unsafe = unsafe )
         files = ds.listOfGoodFiles()
         mapping = 'root://eoscms.cern.ch//eos/cms%s'
         if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
@@ -197,14 +217,6 @@ class ComponentCreator(object):
         component.run_range = run_range
         component.splitFactor = 100
         return component
-
-    def getFiles(self, dataset, user, pattern, useAAA=False, run_range=None, json=None, unsafe = False):
-        # print 'getting files for', dataset,user,pattern
-        ds = createDataset( user, dataset, pattern, readcache=True, run_range=run_range, json=json, unsafe = unsafe )
-        files = ds.listOfGoodFiles()
-        mapping = 'root://eoscms.cern.ch//eos/cms%s'
-        if useAAA: mapping = 'root://cms-xrd-global.cern.ch/%s'
-        return [ mapping % f for f in files]
 
     def getPrimaryDatasetEntries(self, dataset, user, pattern, useAAA=False, run_range=None):
         # print 'getting files for', dataset,user,pattern
