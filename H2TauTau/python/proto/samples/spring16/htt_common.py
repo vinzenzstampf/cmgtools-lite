@@ -14,9 +14,9 @@ from CMGTools.RootTools.samples.samples_13TeV_RunIISpring16MiniAODv2 import ZZTo
 # DY1JetsToLL_M50_LO, DY2JetsToLL_M50_LO, DY3JetsToLL_M50_LO, DY4JetsToLL_M50_LO,
 
 from CMGTools.H2TauTau.proto.samples.spring16.higgs import HiggsGGH125, HiggsVBF125, HiggsTTH125
-from CMGTools.H2TauTau.proto.samples.spring16.higgs_susy import mc_higgs_susy_gg, mc_higgs_susy_bb
+#from CMGTools.H2TauTau.proto.samples.spring16.higgs_susy import mc_higgs_susy_gg, mc_higgs_susy_bb
 
-from CMGTools.H2TauTau.proto.samples.spring16.higgs_susy import HiggsSUSYGG160 as ggh160
+#from CMGTools.H2TauTau.proto.samples.spring16.higgs_susy import HiggsSUSYGG160 as ggh160
 
 # 21 July
 
@@ -131,6 +131,7 @@ for sample in data_single_muon + data_single_electron + data_muon_electron + dat
 
 # Signals
 sm_signals = [HiggsGGH125, HiggsVBF125, HiggsTTH125]
-mssm_signals = mc_higgs_susy_bb + mc_higgs_susy_gg
+#mssm_signals = mc_higgs_susy_bb + mc_higgs_susy_gg
 
-sync_list = [ggh160, HiggsVBF125]
+#sync_list = [ggh160, HiggsVBF125]
+sync_list = [HiggsVBF125]
