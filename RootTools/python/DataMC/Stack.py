@@ -1,6 +1,7 @@
 import copy
 from ROOT import THStack, gPad, kGray
 from CMGTools.RootTools.Style import sBlue,sBlack
+from pdb import set_trace
 
 class Stack:
     '''Attempt to overcome the deficiencies of the THStack class.
@@ -89,9 +90,9 @@ class Stack:
         '''Draw statistical errors if statErrors is True.'''
         if self.statErrors is False:
             return
-        #self.totalHist.weighted.SetFillColor(kGray)
-        self.totalHist.weighted.SetFillColor(1)
-        self.totalHist.weighted.SetFillStyle(3544)
+        self.totalHist.weighted.SetFillColor(kGray+1)
+        # self.totalHist.weighted.SetFillColor(1)
+        self.totalHist.weighted.SetFillStyle(3244) #originally 3544, check out at https://root.cern.ch/root/html402/TAttFill.html
         self.totalHist.Draw('samee2')
         
     def SetStyle(self, style ):
